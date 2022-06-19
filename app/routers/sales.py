@@ -8,6 +8,7 @@ from fastapi import Body, Depends, FastAPI, Response, status, HTTPException, API
 from sqlalchemy.orm import Session
 from ..database import get_db
 from typing import List
+from sqlalchemy.sql import func
 
 router = APIRouter(
     prefix="/sales",
@@ -19,6 +20,19 @@ def get_sales(db: Session = Depends(get_db),
 current_user : int = Depends (oauth2.get_current_user)):
     sales = db.query(models.Sale).all()
     # sales = db.query(models.Sale).filter(models.Stock.owner_id == current_user.id).all()
+    return sales
+
+@router.get("/sum", response_model=List[schemas.Sale])
+def get_sales(db: Session = Depends(get_db),
+current_user : int = Depends (oauth2.get_current_user)):
+    sales = db.query(models.Sale).all()
+    # sales = db.query(models.Sale).filter(models.Stock.owner_id == current_user.id).all()
+    qry = db.query(func.sum(models.Sale.total).label("total_sales"),
+                     )
+    print(qry.first()[0])
+    # qry = qry.group_by(Score.name)
+    # for _res in qry.all():
+    #     print _res
     return sales
 
 
