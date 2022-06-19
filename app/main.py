@@ -17,4 +17,6 @@ app.include_router(purchase.router)
 app.include_router(sales.router)
 app.include_router(expenses.router)
 
- 
+ @app.get("/")
+def root():
+    return {"message": "welcome to jogoo bar"}
